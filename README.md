@@ -5,6 +5,13 @@ misst den Abstand zur Wasseroberfläche; daraus werden Füllstand (%) und Liter 
 **MQTT mit Home-Assistant-Autodiscovery** veröffentlicht. Ersetzt die frühere
 [opencistern](https://github.com/diefenbecker/opencistern)-Firmware.
 
+> 📖 **Ausführliche Anleitungen im [Wiki](https://github.com/joschnurr/regenzisterne-esphome/wiki):**
+> [Flashen](https://github.com/joschnurr/regenzisterne-esphome/wiki/Flashen) ·
+> [Benötigte Werkzeuge](https://github.com/joschnurr/regenzisterne-esphome/wiki/Werkzeuge) ·
+> [Von Grund auf neu aufbauen](https://github.com/joschnurr/regenzisterne-esphome/wiki/Neuaufbau) ·
+> [Kalibrierung & Betrieb](https://github.com/joschnurr/regenzisterne-esphome/wiki/Betrieb) ·
+> [Fehlersuche](https://github.com/joschnurr/regenzisterne-esphome/wiki/Fehlersuche)
+
 ## Warum der Umbau
 
 | | opencistern (bisher) | ESPHome (neu) |
