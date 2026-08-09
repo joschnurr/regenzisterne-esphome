@@ -1,0 +1,7 @@
+# Echte Zugangsdaten und Build-Artefakte nie ins Git.
+secrets.yaml
+.esphome/
+*.bin
+
+# Laufzeit-Zustand des ESPHome-Dashboards (vom Container als root angelegt).
+.device-builder*

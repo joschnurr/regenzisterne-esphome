@@ -1,0 +1,106 @@
+# Regenzisterne-Füllstand — ESPHome-Ersatz für die opencistern-Firmware.
+#
+# Warum der Umbau: opencistern hielt das MQTT-Keepalive nicht durch (~30 Reconnects/h) und zeigte
+# auf http://<ESP>/cfg WLAN- und MQTT-Passwort im Klartext. ESPHome ist stabil, hat keine offene
+# Konfigseite und aktualisiert nach dem ersten Flashen per WLAN (OTA).
+#
+# **Home-Assistant-Autodiscovery:** Die Sensoren erscheinen automatisch als Gerät „Regenzisterne"
+# in HA — kein Handpflegen in mqtt_sensor.yaml mehr. Damit die bestehenden Entity-IDs (die schon in
+# group.sensor_zisterne genutzt werden) EXAKT erhalten bleiben, heißt der Node bewusst
+# `regenzisterne` und die Sensoren `Liter`/`Abstand`/`Fullstand` — HA bildet daraus
+# `sensor.regenzisterne_liter`, `_abstand`, `_fullstand`, also genau die heutigen IDs.
+#
+# Rechengrundlage (aus opencistern übernommen, zisterne/rechnen.ino):
+#   Füllstand % = (Abstand − Sensor→Boden) / (Sensor→Maximalpegel − Sensor→Boden) × 100
+#   Liter       = Füllstand % / 100 × Gesamtvolumen     (ohne opencisterns grobe 1-%-Rundung)
+
+substitutions:
+  abst_boden: "170"      # Abstand Sensor → Tankboden (cm)
+  abst_max:   "21"       # Abstand Sensor → maximaler Wasserstand / obere Totzone (cm)
+  volumen:    "3200"     # Nutzvolumen der Zisterne (Liter)
+
+esphome:
+  name: regenzisterne
+  friendly_name: Regenzisterne
+
+esp8266:
+  board: nodemcuv2       # NodeMCU v2. Bei einem Wemos D1 mini stattdessen: d1_mini (gleicher Chip).
+
+logger:
+
+ota:
+  - platform: esphome    # drahtlose Updates ab dem zweiten Mal — kein USB mehr nötig
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Regenzisterne Fallback"
+    password: !secret ap_password
+
+captive_portal:
+
+mqtt:
+  broker: 192.168.178.11 # Mosquitto auf der Gbox über die LAN-IP (der ESP ist im WLAN, nicht im
+                         # Docker-Netz — 172.10.10.10 wäre von hier nicht erreichbar).
+  discovery: true        # Home-Assistant-Autodiscovery: Gerät + Entitäten erscheinen von selbst.
+
+sensor:
+  # HC-SR04-Ultraschall: Abstand zur Wasseroberfläche. Pins wie in der opencistern-Firmware
+  # (zisterne/zisterne.ino: TRIGGER = GPIO4/D2, ECHO = GPIO5/D1). Rückgabe in Metern.
+  - platform: ultrasonic
+    trigger_pin: GPIO4
+    echo_pin: GPIO5
+    id: dist_m
+    update_interval: 60s
+    internal: true
+    filters:
+      - median:
+          window_size: 5
+
+  - platform: template
+    name: "Abstand"
+    unit_of_measurement: cm
+    icon: mdi:signal-distance-variant
+    accuracy_decimals: 0
+    update_interval: 60s
+    lambda: 'return isnan(id(dist_m).state) ? NAN : id(dist_m).state * 100.0;'
+
+  - platform: template
+    name: "Fullstand"
+    id: fuellstand
+    unit_of_measurement: "%"
+    icon: mdi:car-coolant-level
+    accuracy_decimals: 1
+    update_interval: 60s
+    lambda: |-
+      if (isnan(id(dist_m).state)) return {};
+      float a = id(dist_m).state * 100.0;                              // cm
+      float f = ((a - ${abst_boden}) / (${abst_max} - ${abst_boden})) * 100.0;
+      if (f < 0)   f = 0;
+      if (f > 100) f = 100;
+      return f;
+
+  - platform: template
+    name: "Liter"
+    unit_of_measurement: L
+    icon: mdi:water
+    accuracy_decimals: 0
+    update_interval: 60s
+    lambda: 'return isnan(id(fuellstand).state) ? NAN : id(fuellstand).state / 100.0 * ${volumen};'
+
+  # --- Diagnose (der ESPHome-Bonus, den opencistern nicht bot) --------------------------------
+  - platform: wifi_signal
+    name: "WLAN-Signal"
+    update_interval: 60s
+    entity_category: diagnostic
+
+  - platform: uptime
+    name: "Betriebszeit"
+    entity_category: diagnostic
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP-Adresse"
+      entity_category: diagnostic
