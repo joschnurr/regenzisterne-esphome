@@ -117,6 +117,3 @@ text_sensor:
     ip_address:
       name: "IP-Adresse"
       entity_category: diagnostic
-
-    scan_results:
-      name: Scan Results

@@ -37,6 +37,7 @@ bleibt auch `group.sensor_zisterne` in Home Assistant unverändert.
 | `secrets.yaml.example` | Vorlage mit Platzhaltern |
 | `docs/umstieg.md` | Schritt-für-Schritt: alte HA-Sensoren entfernen → per USB flashen → prüfen |
 | `docs/betrieb.md` | Betrieb, Wartung, Kalibrierung, Firmware-Datei, Rückweg |
+| `docs/ausbau-heizungsdruck.md` | **Geplanter Ausbau:** Heizungsdruck per I2C-Sensor XDB401 mit an den Zisternen-ESP |
 
 Der zugehörige Docker-Stack (ESPHome-Dashboard) liegt in der Gbox-Infrastruktur unter
 `smarthome/stacks/esphome/` und mountet dieses Repo (`/home/johannes/regenzisterne-esphome`)
