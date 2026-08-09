@@ -18,6 +18,13 @@ das Kessel-Manometer.
 - **Bereich:** 0–5 bar relativ (Überdruck) ist der Sweetspot: Systemdruck 1–2 bar, Sicherheitsventil
   3 bar → genug Reserve, gute Auflösung. **Wichtig: „relativ"/Überdruck, nicht „absolut".**
 
+> **Kauf-Variante (wichtig):** Diese Sammelanzeigen (z. B. „SUP 3.3V OUT I2C … G1/4 5–12 V 0–5 V …")
+> bündeln mehrere Ausführungen. Wähle die **I2C-Version mit 3,3-V-Versorgung** und den
+> **5-bar-Bereich (0,5 MPa), relativ/Überdruck** — die ebenfalls angebotenen **0–5-V-Analog-** und
+> **5–12-V-Varianten passen hier nicht**. Solche Keramik-/Edelstahl-G1/4-I2C-Sensoren sind
+> XDB401-kompatibel (nativer ESPHome-`xdb401`-Treiber); I2C-Adresse **fest 0x7F** (nur ein Sensor pro
+> Bus), Druck wird in **Pascal** geliefert (in der Konfig × 0,00001 → bar).
+
 ## Anschluss am ESP (Verdrahtung)
 Der Ultraschall nutzt **GPIO4 (D2) = TRIG** und **GPIO5 (D1) = ECHO** — das sind **Digital**-Pins.
 I2C ist am ESP8266 in Software nachgebildet und darf **beliebige freie** Pins nutzen; nur **nicht**
@@ -46,10 +53,10 @@ Der Ultraschall-Block bleibt **unverändert**; der XDB401 kommt nur zusätzlich 
 ## ESPHome-Konfiguration (Ansatz)
 Kommt **zusätzlich** in die bestehende `regenzisterne.yaml`. Der Ultraschall-Teil bleibt, wie er ist.
 
-> **Vor dem Einspielen prüfen:** genaues Schema und I2C-Adresse des `xdb401`-Components gegen die
-> aktuelle ESPHome-Doku abgleichen; `i2c: scan: true` zeigt die real erkannte Adresse im Log
-> (oft `0x7F`). Die Kalibrier-Stützpunkte unten sind **Platzhalter** und werden real gegen das
-> Manometer gemessen.
+> **Hinweis:** Schema gegen die [ESPHome-`xdb401`-Doku](https://esphome.io/components/sensor/xdb401/)
+> verifiziert (Stand 08/2026). I2C-Adresse fest **0x7F**; `pressure_range_bar` **muss zum gekauften
+> Sensor passen** (hier **5**). Der Sensor liefert **Pascal** → `multiply: 0.00001` ergibt bar. Die
+> `calibrate_linear`-Stützpunkte sind **Platzhalter** und werden real gegen das Manometer gemessen.
 
 ```yaml
 i2c:
@@ -60,7 +67,8 @@ i2c:
 
 sensor:
   - platform: xdb401
-    # Adresse/Details gegen die aktuelle ESPHome-xdb401-Doku pruefen (i2c-scan zeigt die reale Adresse)
+    address: 0x7F              # fest (nicht aenderbar) — nur EIN XDB401 pro Bus
+    pressure_range_bar: 5      # MUSS zum gekauften Sensor passen -> 5-bar-Variante!
     pressure:
       name: "Heizungsdruck"
       id: heizungsdruck
@@ -69,8 +77,8 @@ sensor:
       state_class: measurement
       accuracy_decimals: 2
       filters:
-        # Zweipunkt-Kalibrierung gegen das Kessel-Manometer:
-        # linke Werte = ROH-Anzeige des Sensors bei zwei bekannten Manometer-Druecken (real ablesen!)
+        - multiply: 0.00001          # Sensor liefert PASCAL -> bar
+        # Feinabgleich gegen das Kessel-Manometer (zwei real gemessene Werte):
         - calibrate_linear:
             method: least_squares
             datapoints:
@@ -132,6 +140,6 @@ Einspielen per **OTA** (Dashboard → `regenzisterne` → Install → „Wireles
 7. HA: Entitäten beschriften, optional Alarm < 1,0 bar / > 2,5 bar.
 
 ## Offene Punkte / vor dem Kauf prüfen
-- Genaues `xdb401`-Schema und I2C-Adresse in der aktuellen ESPHome-Doku (`i2c: scan`).
-- XDB401-Variante: Bereich **5 bar** (Auflösung) vs. 10 bar (mehr Reserve); Medien-Temperatur der konkreten Variante.
+- **Kauf-Variante:** die **I2C-/3,3-V-Ausführung** mit **5-bar-Bereich** nehmen (nicht die 0–5-V-/5–12-V-Analogvarianten). *(xdb401-Schema, Adresse 0x7F, Pa-Ausgabe sind verifiziert.)*
+- **Medien-Temperatur** der konkreten Variante prüfen (Keramikzelle verträgt viel, die Billig-Elektronik oft nur ~85 °C) → Wassersackrohr einplanen.
 - Ob der Heizungsdruck bewusst unter dem Gerät „Regenzisterne" bleiben soll oder ein eigener Knoten gewünscht ist.
