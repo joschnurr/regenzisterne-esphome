@@ -70,7 +70,7 @@ sensor:
     name: "Fullstand"
     id: fuellstand
     unit_of_measurement: "%"
-    icon: mdi:car-coolant-level
+    icon: mdi:storage-tank        # Pegel der Zisterne — Tank-Symbol statt des Auto-Kühlmittel-Icons
     accuracy_decimals: 1
     update_interval: 60s
     lambda: |-
