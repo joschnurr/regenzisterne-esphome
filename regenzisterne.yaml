@@ -52,11 +52,24 @@ sensor:
     trigger_pin: GPIO4
     echo_pin: GPIO5
     id: dist_m
-    update_interval: 60s
+    update_interval: 10s
     internal: true
     filters:
+      # 1) Fehlmessungen sofort verwerfen: ein Timeout liefert NaN — das darf nie in die
+      #    Glättung, sonst zieht es den Wert weg. Der letzte gute Wert bleibt dann stehen.
+      - filter_out: nan
+      # 2) Ausreißer überstimmen: Median der letzten 7 gültigen Messungen. Der Median ist
+      #    gegen einzelne Fehlwerte unempfindlich (ein Mittelwert würde von einem Spike
+      #    verzogen), d.h. ein einzelner Zappler ändert den Wert NICHT.
       - median:
-          window_size: 5
+          window_size: 7
+          send_every: 1
+          send_first_at: 1
+      # 3) Danach sanft mitteln: gleitender Mittelwert über die letzten 6 Median-Ergebnisse,
+      #    damit der angezeigte Wert ruhig läuft statt in Stufen zu springen.
+      - sliding_window_moving_average:
+          window_size: 6
+          send_every: 1
 
   - platform: template
     name: "Abstand"
@@ -104,3 +117,6 @@ text_sensor:
     ip_address:
       name: "IP-Adresse"
       entity_category: diagnostic
+
+    scan_results:
+      name: Scan Results
