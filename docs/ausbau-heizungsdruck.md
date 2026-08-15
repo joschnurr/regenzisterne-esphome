@@ -143,3 +143,67 @@ Einspielen per **OTA** (Dashboard → `regenzisterne` → Install → „Wireles
 - **Kauf-Variante:** die **I2C-/3,3-V-Ausführung** mit **5-bar-Bereich** nehmen (nicht die 0–5-V-/5–12-V-Analogvarianten). *(xdb401-Schema, Adresse 0x7F, Pa-Ausgabe sind verifiziert.)*
 - **Medien-Temperatur** der konkreten Variante prüfen (Keramikzelle verträgt viel, die Billig-Elektronik oft nur ~85 °C) → Wassersackrohr einplanen.
 - Ob der Heizungsdruck bewusst unter dem Gerät „Regenzisterne" bleiben soll oder ein eigener Knoten gewünscht ist.
+
+
+---
+
+# UMSETZUNG 15.08.2026 — Anschlussplan & Inbetriebnahme (Sensor ist da)
+
+Gekaufte Variante: **„SUP 3.3V OUT I2C", 0–0,5 MPa (= 0–5 bar), China** — XDB401-kompatibel,
+G1/4"-Gewinde, Keramikzelle/Edelstahl. Firmware-Seite ist seit 15.08. eingespielt
+(`i2c:` auf D6/D7 + `platform: xdb401` in `regenzisterne.yaml`), HA-Seite steht
+(2 wählbare Warnstufen + Telegram, siehe unten).
+
+## Anschlussplan (ESP = NodeMCU des Zisternen-Knotens)
+
+```
+   XDB401 (SUP 3,3 V I2C)                    NodeMCU (regenzisterne)
+   ──────────────────────                    ───────────────────────
+   V+  (meist ROT)     ────────────────────  3V3
+   GND (meist SCHWARZ) ────────────────────  GND
+   SDA (meist GELB/GRÜN) ──────┬───────────  D6  (GPIO12)
+                               └─[4,7 kΩ]──  3V3
+   SCL (meist WEISS/BLAU) ─────┬───────────  D7  (GPIO13)
+                               └─[4,7 kΩ]──  3V3
+```
+
+| Sensorader | NodeMCU-Pin | Hinweis |
+|---|---|---|
+| V+ | **3V3** | 3,3-V-Variante — NICHT an 5 V/VIN! |
+| GND | **GND** | gemeinsame Masse |
+| SDA | **D6 (GPIO12)** | nicht D1/D2 — die gehören dem Ultraschall |
+| SCL | **D7 (GPIO13)** | " |
+
+- **Aderfarben prüfen!** Bei den China-Transmittern variiert die Belegung (rot/schwarz/gelb/weiß
+  ist üblich, aber nicht garantiert) — gegen den Beipackzettel/die Artikelseite verifizieren,
+  bevor Spannung draufkommt. V+ auf SDA vertauscht übersteht der Sensor meist, 5 V auf V+ nicht.
+- **Pull-ups sind Pflicht:** Der nackte Transmitter bringt keine mit. Je **4,7 kΩ** von SDA→3V3
+  und SCL→3V3, **am ESP-Ende** verlöten.
+- **Leitung (~2 m): CAT5**, ein verdrilltes Paar für SDA+GND, eines für SCL+GND, Rest ungenutzt
+  (oder V+/GND doppelt). Nicht parallel zur Heizungspumpe/Netzleitungen legen.
+- **Mechanik/Sicherheit** (unverändert von oben): Abgriff am KFE-Hahn/T-Stück, **Wassersackrohr**
+  gegen die Vorlaufhitze, G1/4 dichtet an der **Planfläche** (Dichtring, kein Hanf aufs Gewinde),
+  Anlage **drucklos + kalt** machen, Sicherheitsventil unangetastet.
+
+## Inbetriebnahme (Reihenfolge)
+
+1. ESP **stromlos** machen, Sensor nach Plan anschließen (Pull-ups nicht vergessen).
+2. ESP einschalten → im ESPHome-Log (`Dashboard → regenzisterne → Logs`) muss der I2C-Scan
+   **0x7F** melden; danach liefert `sensor.regenzisterne_heizungsdruck` alle 30 s Werte
+   (offen/drucklos ≈ 0,0 bar).
+3. Sensor an der Heizung einbauen (drucklos/kalt), befüllen, entlüften, Dichtheit prüfen.
+4. **Plausibilität gegen das Kessel-Manometer:** Weicht die Anzeige ab, Zweipunkt-Feinabgleich
+   per `calibrate_linear` hinter dem `multiply` (drucklos → 0, Betriebsdruck → Manometerwert).
+
+## Warnstufen in Home Assistant (seit 15.08. aktiv)
+
+| Baustein | Zweck |
+|---|---|
+| `input_number.heizungsdruck_warnstufe_1` (Start 1,2 bar) | **Stufe 1**, frei wählbar: darunter → Meldung nur in HA |
+| `input_number.heizungsdruck_warnstufe_2` (Start 0,8 bar) | **Stufe 2**, frei wählbar: darunter → zusätzlich **Telegram** |
+| Automation „Heizungsdruck niedrig (Stufe 1)" | persistente HA-Meldung, `for: 2 min` gegen Zappler |
+| Automation „Heizungsdruck kritisch (Stufe 2)" | HA-Meldung + `telegram_bot.send_message` |
+| Automation „Heizungsdruck wieder gut" | räumt beide Meldungen ab, wenn 5 min über Stufe 1 |
+
+Solange der Sensor nicht angeschlossen ist, stehen die Entitäten auf `unavailable` — die
+Automationen lösen dann bewusst **nicht** aus (numeric_state ignoriert Nicht-Zahlen).
