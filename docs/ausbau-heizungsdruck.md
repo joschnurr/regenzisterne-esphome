@@ -156,6 +156,10 @@ G1/4"-Gewinde, Keramikzelle/Edelstahl. Firmware-Seite ist seit 15.08. eingespiel
 
 ## Anschlussplan (ESP = NodeMCU des Zisternen-Knotens)
 
+![Verdrahtung Zisternen-ESP: HC-SR04 + XDB401](anschlussplan-verdrahtung.svg)
+
+*Grafisches Anschlussbild (SVG) — links der vorhandene Ultraschall, rechts der neue Drucktransmitter samt Pflicht-Pull-ups. Textfassung darunter.*
+
 ```
    XDB401 (SUP 3,3 V I2C)                    NodeMCU (regenzisterne)
    ──────────────────────                    ───────────────────────

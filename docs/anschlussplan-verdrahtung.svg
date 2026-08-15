@@ -1,0 +1,115 @@
+<svg width="980" height="700" viewBox="0 0 980 700" xmlns="http://www.w3.org/2000/svg" font-family="DejaVu Sans, Arial, sans-serif">
+  <rect width="980" height="700" fill="#ffffff"/>
+  <text x="490" y="36" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">Verdrahtung Zisternen-ESP (NodeMCU): HC-SR04 + XDB401-Heizungsdruck</text>
+  <text x="490" y="58" text-anchor="middle" font-size="12" fill="#666">Stand 15.08.2026 — Details: docs/ausbau-heizungsdruck.md</text>
+
+  <!-- NodeMCU -->
+  <rect x="400" y="120" width="180" height="440" rx="10" fill="#263238" stroke="#000"/>
+  <text x="490" y="148" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">NodeMCU</text>
+  <text x="490" y="166" text-anchor="middle" font-size="11" fill="#b0bec5">ESP8266 · regenzisterne</text>
+  <rect x="468" y="548" width="44" height="14" fill="#90a4ae"/>
+  <text x="490" y="580" text-anchor="middle" font-size="10" fill="#666">Micro-USB</text>
+
+  <!-- Pins links: VIN, GND, D2, D1 (zweizeilig, keine Kollisionen) -->
+  <rect x="392" y="194" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="415" y="204" font-size="13" fill="#ffffff">VIN</text>
+  <text x="415" y="218" font-size="9" fill="#b0bec5">5 V</text>
+  <rect x="392" y="254" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="415" y="264" font-size="13" fill="#ffffff">GND</text>
+  <rect x="392" y="314" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="415" y="324" font-size="13" fill="#ffffff">D2</text>
+  <text x="415" y="338" font-size="9" fill="#b0bec5">GPIO4</text>
+  <rect x="392" y="374" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="415" y="384" font-size="13" fill="#ffffff">D1</text>
+  <text x="415" y="398" font-size="9" fill="#b0bec5">GPIO5</text>
+
+  <!-- Pins rechts: 3V3, GND, D6, D7 -->
+  <rect x="576" y="194" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="565" y="204" text-anchor="end" font-size="13" fill="#ffffff">3V3</text>
+  <rect x="576" y="254" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="565" y="264" text-anchor="end" font-size="13" fill="#ffffff">GND</text>
+  <rect x="576" y="314" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="565" y="324" text-anchor="end" font-size="13" fill="#ffffff">D6</text>
+  <text x="565" y="338" text-anchor="end" font-size="9" fill="#b0bec5">GPIO12</text>
+  <rect x="576" y="374" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="565" y="384" text-anchor="end" font-size="13" fill="#ffffff">D7</text>
+  <text x="565" y="398" text-anchor="end" font-size="9" fill="#b0bec5">GPIO13</text>
+
+  <!-- HC-SR04 -->
+  <rect x="70" y="170" width="210" height="260" rx="8" fill="#eceff1" stroke="#607d8b"/>
+  <text x="175" y="196" text-anchor="middle" font-size="14" font-weight="bold" fill="#37474f">HC-SR04 (Zisterne)</text>
+  <circle cx="125" cy="248" r="30" fill="#cfd8dc" stroke="#607d8b"/>
+  <circle cx="225" cy="248" r="30" fill="#cfd8dc" stroke="#607d8b"/>
+  <text x="125" y="253" text-anchor="middle" font-size="12" fill="#455a64">T</text>
+  <text x="225" y="253" text-anchor="middle" font-size="12" fill="#455a64">R</text>
+  <rect x="274" y="294" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="268" y="304" text-anchor="end" font-size="12" fill="#37474f">VCC</text>
+  <rect x="274" y="324" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="268" y="334" text-anchor="end" font-size="12" fill="#37474f">TRIG</text>
+  <rect x="274" y="354" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="268" y="364" text-anchor="end" font-size="12" fill="#37474f">ECHO</text>
+  <rect x="274" y="384" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="268" y="394" text-anchor="end" font-size="12" fill="#37474f">GND</text>
+
+  <!-- Leitungen HC-SR04 -->
+  <path d="M286,300 H340 V200 H392" fill="none" stroke="#e53935" stroke-width="3"/>
+  <path d="M286,330 H350 V320 H392" fill="none" stroke="#43a047" stroke-width="3"/>
+  <path d="M286,360 H355 V380 H392" fill="none" stroke="#1e88e5" stroke-width="3"/>
+  <path d="M286,390 H330 V260 H392" fill="none" stroke="#212121" stroke-width="3"/>
+
+  <!-- XDB401: Gehäuse höher, Pins unterhalb des Titelblocks -->
+  <rect x="740" y="180" width="170" height="145" rx="10" fill="#eceff1" stroke="#607d8b"/>
+  <text x="825" y="202" text-anchor="middle" font-size="14" font-weight="bold" fill="#37474f">XDB401</text>
+  <text x="825" y="218" text-anchor="middle" font-size="11" fill="#455a64">SUP 3,3 V I2C · 0–5 bar</text>
+  <text x="825" y="232" text-anchor="middle" font-size="11" fill="#455a64">Adresse fest 0x7F</text>
+  <rect x="734" y="244" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="755" y="254" font-size="12" fill="#37474f">V+ (rot)</text>
+  <rect x="734" y="264" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="755" y="274" font-size="12" fill="#37474f">GND (schwarz)</text>
+  <rect x="734" y="284" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="755" y="294" font-size="12" fill="#37474f">SDA (gelb)</text>
+  <rect x="734" y="304" width="12" height="12" fill="#ffca28" stroke="#795548"/>
+  <text x="755" y="314" font-size="12" fill="#37474f">SCL (weiß)</text>
+  <rect x="770" y="325" width="110" height="24" fill="#b0bec5" stroke="#607d8b"/>
+  <rect x="795" y="349" width="60" height="38" fill="#cfd8dc" stroke="#607d8b"/>
+  <line x1="795" y1="357" x2="855" y2="357" stroke="#90a4ae"/>
+  <line x1="795" y1="365" x2="855" y2="365" stroke="#90a4ae"/>
+  <line x1="795" y1="373" x2="855" y2="373" stroke="#90a4ae"/>
+  <line x1="795" y1="381" x2="855" y2="381" stroke="#90a4ae"/>
+  <text x="825" y="407" text-anchor="middle" font-size="10.5" fill="#666">G1/4″ → Heizkreis (T-Stück/KFE,</text>
+  <text x="825" y="421" text-anchor="middle" font-size="10.5" fill="#666">Wassersackrohr, Dichtring)</text>
+
+  <!-- Leitungen XDB401 + Pull-ups -->
+  <path d="M588,200 H640" fill="none" stroke="#fb8c00" stroke-width="3"/>
+  <path d="M640,200 V350" fill="none" stroke="#fb8c00" stroke-width="3"/>
+  <path d="M640,250 H734" fill="none" stroke="#fb8c00" stroke-width="3"/>
+  <path d="M588,260 H700 V270 H734" fill="none" stroke="#212121" stroke-width="3"/>
+  <path d="M588,320 H690 V290 H734" fill="none" stroke="#f9a825" stroke-width="3"/>
+  <path d="M588,380 H710 V310 H734" fill="none" stroke="#757575" stroke-width="3"/>
+  <!-- Pull-ups von der 3V3-Schiene -->
+  <line x1="640" y1="300" x2="690" y2="300" stroke="#f9a825" stroke-width="3"/>
+  <rect x="652" y="294" width="26" height="12" fill="#ffffff" stroke="#333"/>
+  <text x="665" y="290" text-anchor="middle" font-size="10" fill="#333">4,7 kΩ</text>
+  <line x1="640" y1="350" x2="710" y2="350" stroke="#757575" stroke-width="3"/>
+  <rect x="662" y="344" width="26" height="12" fill="#ffffff" stroke="#333"/>
+  <text x="675" y="340" text-anchor="middle" font-size="10" fill="#333">4,7 kΩ</text>
+  <circle cx="640" cy="200" r="3.5" fill="#fb8c00"/>
+  <circle cx="640" cy="250" r="3.5" fill="#fb8c00"/>
+  <circle cx="640" cy="300" r="3.5" fill="#fb8c00"/>
+  <circle cx="640" cy="350" r="3.5" fill="#fb8c00"/>
+  <circle cx="690" cy="300" r="3.5" fill="#f9a825"/>
+  <circle cx="710" cy="350" r="3.5" fill="#757575"/>
+  <text x="655" y="378" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c62828">Pull-ups Pflicht!</text>
+  <text x="655" y="392" text-anchor="middle" font-size="10" fill="#c62828">(Transmitter hat keine)</text>
+
+  <!-- Legende -->
+  <rect x="70" y="590" width="840" height="92" rx="6" fill="#fafafa" stroke="#ccc"/>
+  <rect x="85" y="608" width="18" height="6" fill="#e53935"/><text x="110" y="616" font-size="12" fill="#333">5 V (HC-SR04)</text>
+  <rect x="235" y="608" width="18" height="6" fill="#fb8c00"/><text x="260" y="616" font-size="12" fill="#333">3,3 V (XDB401 — NICHT 5 V!)</text>
+  <rect x="480" y="608" width="18" height="6" fill="#212121"/><text x="505" y="616" font-size="12" fill="#333">GND (gemeinsam)</text>
+  <rect x="85" y="634" width="18" height="6" fill="#43a047"/><text x="110" y="642" font-size="12" fill="#333">TRIG → D2</text>
+  <rect x="200" y="634" width="18" height="6" fill="#1e88e5"/><text x="225" y="642" font-size="12" fill="#333">ECHO → D1</text>
+  <rect x="320" y="634" width="18" height="6" fill="#f9a825"/><text x="345" y="642" font-size="12" fill="#333">SDA → D6</text>
+  <rect x="435" y="634" width="18" height="6" fill="#757575"/><text x="460" y="642" font-size="12" fill="#333">SCL → D7 (I2C, 100 kHz)</text>
+  <text x="85" y="668" font-size="11.5" fill="#333">~2 m CAT5: SDA+GND und SCL+GND je als verdrilltes Paar · Aderfarben des Transmitters vor dem Anschluss gegen den Beipackzettel prüfen!</text>
+</svg>
