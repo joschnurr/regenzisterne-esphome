@@ -5,3 +5,7 @@ secrets.yaml
 
 # Laufzeit-Zustand des ESPHome-Dashboards (vom Container als root angelegt).
 .device-builder*
+
+# Betriebs-/Sicherungsdateien des Dashboards, nie ins Repo.
+*.log
+*.bak*
