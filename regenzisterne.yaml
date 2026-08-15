@@ -45,6 +45,17 @@ mqtt:
                          # Docker-Netz — 172.10.10.10 wäre von hier nicht erreichbar).
   discovery: true        # Home-Assistant-Autodiscovery: Gerät + Entitäten erscheinen von selbst.
 
+# --- Heizungsdruck (XDB401, I2C) — Ausbau 15.08.2026, docs/ausbau-heizungsdruck.md ------------
+# XDB401-Drucktransmitter (SUP 3,3-V-I2C-Variante, 0–0,5 MPa = 0–5 bar relativ) am Heizkreis,
+# ~2 m CAT5 bis zum ESP. I2C bewusst auf D6/D7 — GPIO4/GPIO5 gehören dem Ultraschall.
+# 100 kHz wegen der Leitungslänge; Pull-ups (2×4,7 kΩ nach 3V3) sitzen am ESP-Ende, der nackte
+# Transmitter bringt keine mit. Adresse ist fest 0x7F (nur ein XDB401 je Bus möglich).
+i2c:
+  sda: GPIO12          # D6
+  scl: GPIO13          # D7
+  frequency: 100kHz
+  scan: true           # beim ersten Start: Log muss 0x7F finden
+
 sensor:
   # HC-SR04-Ultraschall: Abstand zur Wasseroberfläche. Pins wie in der opencistern-Firmware
   # (zisterne/zisterne.ino: TRIGGER = GPIO4/D2, ECHO = GPIO5/D1). Rückgabe in Metern.
@@ -111,6 +122,29 @@ sensor:
   - platform: uptime
     name: "Betriebszeit"
     entity_category: diagnostic
+
+  # Heizungsdruck über den XDB401. Liefert PASCAL -> multiply macht bar. Glättung wie beim
+  # Ultraschall: einzelne Zappler sollen keine (Telegram-)Warnung auslösen; die eigentliche
+  # Entprellung machen die HA-Automationen zusätzlich über ihre "for:"-Dauer.
+  # Solange der Sensor noch nicht verdrahtet ist, loggt die Komponente nur Warnungen und die
+  # Entitäten stehen auf unavailable — der Rest des Knotens läuft normal weiter.
+  - platform: xdb401
+    address: 0x7F
+    pressure_range_bar: 5      # MUSS zur gekauften Variante passen (0–0,5 MPa = 5 bar)
+    update_interval: 30s
+    pressure:
+      name: "Heizungsdruck"
+      id: heizungsdruck
+      unit_of_measurement: bar
+      accuracy_decimals: 2
+      filters:
+        - multiply: 0.00001    # Pa -> bar
+        - sliding_window_moving_average:
+            window_size: 6
+            send_every: 1
+    temperature:
+      name: "Heizung Sensortemperatur"
+      accuracy_decimals: 1
 
 text_sensor:
   - platform: wifi_info
