@@ -154,35 +154,54 @@ G1/4"-Gewinde, Keramikzelle/Edelstahl. Firmware-Seite ist seit 15.08. eingespiel
 (`i2c:` auf D6/D7 + `platform: xdb401` in `regenzisterne.yaml`), HA-Seite steht
 (2 wählbare Warnstufen + Telegram, siehe unten).
 
-## Anschlussplan (ESP = NodeMCU des Zisternen-Knotens)
+## Datenblatt (dem Sensor beigelegt; eingescannt 20.08.2026)
+
+**[`xdb401-datenblatt-i2c.pdf`](xdb401-datenblatt-i2c.pdf)** — die I2C-Doku des gekauften
+Transmitters. Am 20.08.2026 gegen Firmware und Plan geprüft, Ergebnis:
+
+| Punkt | Datenblatt | Projektstand |
+|---|---|---|
+| I2C-Adresse | A7–A1 alle 1 → **0x7F** | ✓ `address: 0x7F` |
+| Versorgung | **+3,3 V** | ✓ 3V3-Pin, nicht 5 V |
+| Pull-ups | **intern vorhanden** („internally connected with a pull-up resistor, no need to increase") | Plan sagte „Pflicht" → **korrigiert**, extern nur noch optional |
+| Aderfarben | **Braun = V+, Blau = GND, Weiß = SDA, Schwarz = SCL** | Plan riet rot/schwarz/gelb/weiß → **korrigiert** |
+| Messablauf | `0x0A` → Reg `0x30` schreiben, Sco-Bit (Bit 3) in `0x30` pollen bzw. ~50 ms warten; Druck aus Reg `0x06–0x08` (24 bit, MSB = Vorzeichen, Wert/2²³ × Endwert), Temperatur aus Reg `0x09–0x0A` (16 bit, /256 = °C) | ✓ exakt das Schema des ESPHome-`xdb401`-Treibers |
+| Endwert (Fullscale) | nennt das Blatt nicht (Beispielcode: „e.g. 1000 kPa") | bestellte Variante 0–0,5 MPa → `pressure_range_bar: 5` bleibt |
+
+> **Wichtigste Erkenntnis: Schwarz ist bei diesem Sensor NICHT Masse, sondern SCL — Masse
+> ist Blau.** Wer nach Gefühl „schwarz = GND" auflegt, legt den I2C-Takt auf Masse und lässt
+> den Sensor ohne Massebezug. Erst die Farben laut Tabelle auflegen, dann Spannung drauf.
+
+## Anschlussplan (ESP = NodeMCU des Zisternen-Knotens) — Farben lt. Datenblatt
 
 ![Verdrahtung Zisternen-ESP: HC-SR04 + XDB401](anschlussplan-verdrahtung.svg)
 
-*Grafisches Anschlussbild (SVG) — links der vorhandene Ultraschall, rechts der neue Drucktransmitter samt Pflicht-Pull-ups. Textfassung darunter.*
+*Grafisches Anschlussbild (SVG) — links der vorhandene Ultraschall, rechts der neue Drucktransmitter. Textfassung darunter.*
 
 ```
    XDB401 (SUP 3,3 V I2C)                    NodeMCU (regenzisterne)
    ──────────────────────                    ───────────────────────
-   V+  (meist ROT)     ────────────────────  3V3
-   GND (meist SCHWARZ) ────────────────────  GND
-   SDA (meist GELB/GRÜN) ──────┬───────────  D6  (GPIO12)
-                               └─[4,7 kΩ]──  3V3
-   SCL (meist WEISS/BLAU) ─────┬───────────  D7  (GPIO13)
-                               └─[4,7 kΩ]──  3V3
+   V+  (BRAUN)   ──────────────────────────  3V3
+   GND (BLAU)    ──────────────────────────  GND
+   SDA (WEISS)   ──────────────┬───────────  D6  (GPIO12)
+                               └─[4,7 kΩ]──  3V3   (optional, s. Pull-ups)
+   SCL (SCHWARZ) ──────────────┬───────────  D7  (GPIO13)
+                               └─[4,7 kΩ]──  3V3   (optional)
 ```
 
-| Sensorader | NodeMCU-Pin | Hinweis |
-|---|---|---|
-| V+ | **3V3** | 3,3-V-Variante — NICHT an 5 V/VIN! |
-| GND | **GND** | gemeinsame Masse |
-| SDA | **D6 (GPIO12)** | nicht D1/D2 — die gehören dem Ultraschall |
-| SCL | **D7 (GPIO13)** | " |
+| Sensorader (lt. Datenblatt) | Signal | NodeMCU-Pin | Hinweis |
+|---|---|---|---|
+| **Braun** | V+ | **3V3** | 3,3-V-Variante — NICHT an 5 V/VIN! |
+| **Blau** | GND | **GND** | gemeinsame Masse — nicht die schwarze Ader! |
+| **Weiß** | SDA | **D6 (GPIO12)** | nicht D1/D2 — die gehören dem Ultraschall |
+| **Schwarz** | SCL | **D7 (GPIO13)** | Schwarz ist hier Takt, keine Masse |
 
-- **Aderfarben prüfen!** Bei den China-Transmittern variiert die Belegung (rot/schwarz/gelb/weiß
-  ist üblich, aber nicht garantiert) — gegen den Beipackzettel/die Artikelseite verifizieren,
-  bevor Spannung draufkommt. V+ auf SDA vertauscht übersteht der Sensor meist, 5 V auf V+ nicht.
-- **Pull-ups sind Pflicht:** Der nackte Transmitter bringt keine mit. Je **4,7 kΩ** von SDA→3V3
-  und SCL→3V3, **am ESP-Ende** verlöten.
+- **Aderfarben: erledigt.** Die Belegung stammt aus dem beigelegten Datenblatt (Tabelle oben),
+  nicht mehr aus Erfahrungswerten. Vor dem Einschalten trotzdem einmal gegen das PDF gegenlesen.
+- **Pull-ups: laut Datenblatt im Sensor eingebaut**, externe sind nicht nötig. Die ursprünglich
+  geplanten 2× 4,7 kΩ (SDA→3V3, SCL→3V3 am ESP-Ende) **dürfen bleiben bzw. sind die Reserve,
+  falls die 2-m-Leitung zickt** — parallel zu den internen ergeben sie einfach einen kräftigeren
+  Pull-up, das schadet bei 3,3 V/100 kHz nicht.
 - **Leitung (~2 m): CAT5**, ein verdrilltes Paar für SDA+GND, eines für SCL+GND, Rest ungenutzt
   (oder V+/GND doppelt). Nicht parallel zur Heizungspumpe/Netzleitungen legen.
 - **Mechanik/Sicherheit** (unverändert von oben): Abgriff am KFE-Hahn/T-Stück, **Wassersackrohr**

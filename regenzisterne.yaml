@@ -48,8 +48,10 @@ mqtt:
 # --- Heizungsdruck (XDB401, I2C) — Ausbau 15.08.2026, docs/ausbau-heizungsdruck.md ------------
 # XDB401-Drucktransmitter (SUP 3,3-V-I2C-Variante, 0–0,5 MPa = 0–5 bar relativ) am Heizkreis,
 # ~2 m CAT5 bis zum ESP. I2C bewusst auf D6/D7 — GPIO4/GPIO5 gehören dem Ultraschall.
-# 100 kHz wegen der Leitungslänge; Pull-ups (2×4,7 kΩ nach 3V3) sitzen am ESP-Ende, der nackte
-# Transmitter bringt keine mit. Adresse ist fest 0x7F (nur ein XDB401 je Bus möglich).
+# 100 kHz wegen der Leitungslänge. Laut beigelegtem Datenblatt (docs/xdb401-datenblatt-i2c.pdf,
+# 20.08.2026): Pull-ups sind im Sensor EINGEBAUT (externe 4,7 kΩ nur als Reserve für die 2 m);
+# Aderfarben braun=V+, blau=GND, weiss=SDA, SCHWARZ=SCL — schwarz ist NICHT Masse!
+# Adresse ist fest 0x7F (nur ein XDB401 je Bus möglich).
 i2c:
   sda: GPIO12          # D6
   scl: GPIO13          # D7

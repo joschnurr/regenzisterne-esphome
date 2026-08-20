@@ -1,7 +1,7 @@
 <svg width="980" height="700" viewBox="0 0 980 700" xmlns="http://www.w3.org/2000/svg" font-family="DejaVu Sans, Arial, sans-serif">
   <rect width="980" height="700" fill="#ffffff"/>
   <text x="490" y="36" text-anchor="middle" font-size="20" font-weight="bold" fill="#212121">Verdrahtung Zisternen-ESP (NodeMCU): HC-SR04 + XDB401-Heizungsdruck</text>
-  <text x="490" y="58" text-anchor="middle" font-size="12" fill="#666">Stand 15.08.2026 — Details: docs/ausbau-heizungsdruck.md</text>
+  <text x="490" y="58" text-anchor="middle" font-size="12" fill="#666">Stand 20.08.2026 — Aderfarben lt. beigelegtem Datenblatt (docs/xdb401-datenblatt-i2c.pdf)</text>
 
   <!-- NodeMCU -->
   <rect x="400" y="120" width="180" height="440" rx="10" fill="#263238" stroke="#000"/>
@@ -63,13 +63,13 @@
   <text x="825" y="218" text-anchor="middle" font-size="11" fill="#455a64">SUP 3,3 V I2C · 0–5 bar</text>
   <text x="825" y="232" text-anchor="middle" font-size="11" fill="#455a64">Adresse fest 0x7F</text>
   <rect x="734" y="244" width="12" height="12" fill="#ffca28" stroke="#795548"/>
-  <text x="755" y="254" font-size="12" fill="#37474f">V+ (rot)</text>
+  <text x="755" y="254" font-size="12" font-weight="bold" fill="#37474f">V+ (BRAUN)</text>
   <rect x="734" y="264" width="12" height="12" fill="#ffca28" stroke="#795548"/>
-  <text x="755" y="274" font-size="12" fill="#37474f">GND (schwarz)</text>
+  <text x="755" y="274" font-size="12" font-weight="bold" fill="#37474f">GND (BLAU)</text>
   <rect x="734" y="284" width="12" height="12" fill="#ffca28" stroke="#795548"/>
-  <text x="755" y="294" font-size="12" fill="#37474f">SDA (gelb)</text>
+  <text x="755" y="294" font-size="12" font-weight="bold" fill="#37474f">SDA (WEISS)</text>
   <rect x="734" y="304" width="12" height="12" fill="#ffca28" stroke="#795548"/>
-  <text x="755" y="314" font-size="12" fill="#37474f">SCL (weiß)</text>
+  <text x="755" y="314" font-size="12" font-weight="bold" fill="#37474f">SCL (SCHWARZ)</text>
   <rect x="770" y="325" width="110" height="24" fill="#b0bec5" stroke="#607d8b"/>
   <rect x="795" y="349" width="60" height="38" fill="#cfd8dc" stroke="#607d8b"/>
   <line x1="795" y1="357" x2="855" y2="357" stroke="#90a4ae"/>
@@ -79,37 +79,44 @@
   <text x="825" y="407" text-anchor="middle" font-size="10.5" fill="#666">G1/4″ → Heizkreis (T-Stück/KFE,</text>
   <text x="825" y="421" text-anchor="middle" font-size="10.5" fill="#666">Wassersackrohr, Dichtring)</text>
 
-  <!-- Leitungen XDB401 + Pull-ups -->
-  <path d="M588,200 H640" fill="none" stroke="#fb8c00" stroke-width="3"/>
-  <path d="M640,200 V350" fill="none" stroke="#fb8c00" stroke-width="3"/>
-  <path d="M640,250 H734" fill="none" stroke="#fb8c00" stroke-width="3"/>
-  <path d="M588,260 H700 V270 H734" fill="none" stroke="#212121" stroke-width="3"/>
-  <path d="M588,320 H690 V290 H734" fill="none" stroke="#f9a825" stroke-width="3"/>
-  <path d="M588,380 H710 V310 H734" fill="none" stroke="#757575" stroke-width="3"/>
-  <!-- Pull-ups von der 3V3-Schiene -->
+  <!-- Leitungen XDB401 in den ECHTEN Aderfarben (lt. Datenblatt) + optionale Pull-ups -->
+  <!-- V+ braun: 3V3-Pin -> Schiene -> Sensor -->
+  <path d="M588,200 H640" fill="none" stroke="#795548" stroke-width="3"/>
+  <path d="M640,200 V350" fill="none" stroke="#795548" stroke-width="3"/>
+  <path d="M640,250 H734" fill="none" stroke="#795548" stroke-width="3"/>
+  <!-- GND blau -->
+  <path d="M588,260 H700 V270 H734" fill="none" stroke="#1565c0" stroke-width="3"/>
+  <!-- SDA weiss (weisse Ader mit grauer Kontur, sonst unsichtbar) -->
+  <path d="M588,320 H690 V290 H734" fill="none" stroke="#9e9e9e" stroke-width="5"/>
+  <path d="M588,320 H690 V290 H734" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+  <!-- SCL schwarz -->
+  <path d="M588,380 H710 V310 H734" fill="none" stroke="#212121" stroke-width="3"/>
+  <!-- optionale Pull-ups von SDA/SCL zur 3V3-Schiene -->
   <line x1="640" y1="300" x2="690" y2="300" stroke="#f9a825" stroke-width="3"/>
   <rect x="652" y="294" width="26" height="12" fill="#ffffff" stroke="#333"/>
   <text x="665" y="290" text-anchor="middle" font-size="10" fill="#333">4,7 kΩ</text>
-  <line x1="640" y1="350" x2="710" y2="350" stroke="#757575" stroke-width="3"/>
+  <line x1="640" y1="350" x2="710" y2="350" stroke="#f9a825" stroke-width="3"/>
   <rect x="662" y="344" width="26" height="12" fill="#ffffff" stroke="#333"/>
   <text x="675" y="340" text-anchor="middle" font-size="10" fill="#333">4,7 kΩ</text>
-  <circle cx="640" cy="200" r="3.5" fill="#fb8c00"/>
-  <circle cx="640" cy="250" r="3.5" fill="#fb8c00"/>
-  <circle cx="640" cy="300" r="3.5" fill="#fb8c00"/>
-  <circle cx="640" cy="350" r="3.5" fill="#fb8c00"/>
+  <circle cx="640" cy="200" r="3.5" fill="#795548"/>
+  <circle cx="640" cy="250" r="3.5" fill="#795548"/>
+  <circle cx="640" cy="300" r="3.5" fill="#795548"/>
+  <circle cx="640" cy="350" r="3.5" fill="#795548"/>
   <circle cx="690" cy="300" r="3.5" fill="#f9a825"/>
-  <circle cx="710" cy="350" r="3.5" fill="#757575"/>
-  <text x="655" y="378" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c62828">Pull-ups Pflicht!</text>
-  <text x="655" y="392" text-anchor="middle" font-size="10" fill="#c62828">(Transmitter hat keine)</text>
+  <circle cx="710" cy="350" r="3.5" fill="#f9a825"/>
+  <text x="655" y="378" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#2e7d32">Pull-ups: im Sensor eingebaut</text>
+  <text x="655" y="392" text-anchor="middle" font-size="10" fill="#2e7d32">(4,7 kΩ extern optional — Reserve für 2 m)</text>
 
   <!-- Legende -->
   <rect x="70" y="590" width="840" height="92" rx="6" fill="#fafafa" stroke="#ccc"/>
   <rect x="85" y="608" width="18" height="6" fill="#e53935"/><text x="110" y="616" font-size="12" fill="#333">5 V (HC-SR04)</text>
-  <rect x="235" y="608" width="18" height="6" fill="#fb8c00"/><text x="260" y="616" font-size="12" fill="#333">3,3 V (XDB401 — NICHT 5 V!)</text>
-  <rect x="480" y="608" width="18" height="6" fill="#212121"/><text x="505" y="616" font-size="12" fill="#333">GND (gemeinsam)</text>
-  <rect x="85" y="634" width="18" height="6" fill="#43a047"/><text x="110" y="642" font-size="12" fill="#333">TRIG → D2</text>
-  <rect x="200" y="634" width="18" height="6" fill="#1e88e5"/><text x="225" y="642" font-size="12" fill="#333">ECHO → D1</text>
-  <rect x="320" y="634" width="18" height="6" fill="#f9a825"/><text x="345" y="642" font-size="12" fill="#333">SDA → D6</text>
-  <rect x="435" y="634" width="18" height="6" fill="#757575"/><text x="460" y="642" font-size="12" fill="#333">SCL → D7 (I2C, 100 kHz)</text>
-  <text x="85" y="668" font-size="11.5" fill="#333">~2 m CAT5: SDA+GND und SCL+GND je als verdrilltes Paar · Aderfarben des Transmitters vor dem Anschluss gegen den Beipackzettel prüfen!</text>
+  <rect x="235" y="608" width="18" height="6" fill="#43a047"/><text x="260" y="616" font-size="12" fill="#333">TRIG → D2</text>
+  <rect x="350" y="608" width="18" height="6" fill="#1e88e5"/><text x="375" y="616" font-size="12" fill="#333">ECHO → D1</text>
+  <rect x="470" y="608" width="18" height="6" fill="#212121"/><text x="495" y="616" font-size="12" fill="#333">GND HC-SR04 (Dupont-Ader)</text>
+  <text x="85" y="642" font-size="12" font-weight="bold" fill="#333">XDB401-Adern lt. Datenblatt:</text>
+  <rect x="290" y="634" width="18" height="6" fill="#795548"/><text x="315" y="642" font-size="12" fill="#333">Braun = V+ → 3V3 (NICHT 5 V!)</text>
+  <rect x="530" y="634" width="18" height="6" fill="#1565c0"/><text x="555" y="642" font-size="12" fill="#333">Blau = GND</text>
+  <rect x="650" y="634" width="18" height="6" fill="#9e9e9e"/><rect x="652" y="635.5" width="14" height="3" fill="#ffffff"/><text x="675" y="642" font-size="12" fill="#333">Weiß = SDA → D6</text>
+  <rect x="810" y="634" width="18" height="6" fill="#212121"/><text x="835" y="642" font-size="12" fill="#333">Schwarz = SCL → D7</text>
+  <text x="85" y="668" font-size="11.5" font-weight="bold" fill="#c62828">Achtung: Schwarz ist beim XDB401 der Takt (SCL), NICHT Masse — Masse ist die blaue Ader! · I2C 100 kHz, ~2 m CAT5 (SDA+GND, SCL+GND je verdrillt)</text>
 </svg>
